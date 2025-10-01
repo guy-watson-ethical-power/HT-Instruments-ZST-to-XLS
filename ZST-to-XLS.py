@@ -50,7 +50,7 @@ def process_zst_files(zst_file_paths, raw_dir=RAW_DIR, temp_dir=TEMP_DIR, callba
                 callback(f"Error extracting {filename}: {e}", processed / total_files)
             continue
 
-        # Find the 'data' file and rename it
+        # Find the data file and rename it
         data_file_path = os.path.join(extract_dir, "data")
         if os.path.exists(data_file_path):
             new_xls_name = filename[:-4] + ".xls"
@@ -110,11 +110,9 @@ class ModernButton(tk.Frame):
         self.state = state
         self.command = command
         
-        # Calculate width based on text if not specified
         if width is None:
             width = len(text) * 8 + 30
         
-        # Create a canvas for the rounded rectangle
         self.canvas = tk.Canvas(
             self, 
             width=width, 
@@ -124,14 +122,12 @@ class ModernButton(tk.Frame):
         )
         self.canvas.pack()
         
-        # Draw the rounded rectangle
         self.rect_id = self.canvas.create_rounded_rectangle(
             2, 2, width-2, 34, 
             radius=10, 
             fill=self.default_bg if state != tk.DISABLED else self.disabled_bg
         )
         
-        # Add text
         self.text_id = self.canvas.create_text(
             width//2, 18, 
             text=text, 
@@ -139,7 +135,6 @@ class ModernButton(tk.Frame):
             font=("Segoe UI", 10, "bold")
         )
         
-        # Bind events
         self.canvas.bind("<Enter>", self._on_enter)
         self.canvas.bind("<Leave>", self._on_leave)
         self.canvas.bind("<Button-1>", self._on_click)
@@ -170,7 +165,6 @@ class ModernButton(tk.Frame):
         if "text" in kwargs:
             self.canvas.itemconfig(self.text_id, text=kwargs["text"])
 
-# Add rounded rectangle method to Canvas
 tk.Canvas.create_rounded_rectangle = lambda self, x1, y1, x2, y2, radius=25, **kwargs: self.create_polygon(
     x1+radius, y1,
     x2-radius, y1,
@@ -192,7 +186,6 @@ class FileListFrame(tk.Frame):
         super().__init__(master, **kwargs)
         self.config(bg='white', highlightbackground="#e0e0e0", highlightthickness=1)
         
-        # Create a canvas with scrollbar
         self.canvas = tk.Canvas(self, bg='white', highlightthickness=0)
         self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = tk.Frame(self.canvas, bg='white')
@@ -206,14 +199,11 @@ class FileListFrame(tk.Frame):
         
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
         
-        # Pack the canvas and scrollbar
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
-        
-        # Bind canvas resize to window resize
+       
         self.canvas.bind("<Configure>", self._on_canvas_configure)
         
-        # Empty label to show when no files
         self.empty_label = tk.Label(self.scrollable_frame, text="No files selected", bg='white', fg='#999')
         self.empty_label.pack(pady=20)
         
@@ -223,7 +213,6 @@ class FileListFrame(tk.Frame):
         self.canvas.itemconfig(self.canvas_frame, width=event.width)
     
     def set_files(self, file_paths):
-        # Clear existing labels
         for label in self.file_labels:
             label.destroy()
         self.file_labels = []
@@ -234,7 +223,6 @@ class FileListFrame(tk.Frame):
         
         self.empty_label.pack_forget()
         
-        # Add new file labels
         for i, file_path in enumerate(file_paths):
             filename = os.path.basename(file_path)
             bg_color = '#f5f5f5' if i % 2 == 0 else 'white'
@@ -254,25 +242,20 @@ class ZSTCombineApp:
         self.root.configure(bg='#f0f0f0')
         self.root.resizable(True, True)
         self.center_window(600, 500)
-        
-        # Set application style
+   
         self.style = ttk.Style()
         self.style.configure('TProgressbar', thickness=15, troughcolor='#f0f0f0', background='#4a7abc')
         
-        # Main frame
         main_frame = tk.Frame(root, bg='#f0f0f0')
         main_frame.pack(fill='both', expand=True, padx=20, pady=20)
         
-        # Title label
         title_font = Font(family="Segoe UI", size=18, weight="bold")
         title_label = tk.Label(main_frame, text="ZST to Excel Combiner", font=title_font, bg='#f0f0f0')
         title_label.pack(pady=(0, 20))
         
-        # Button frame - centered
         button_frame = tk.Frame(main_frame, bg='#f0f0f0')
         button_frame.pack(fill='x', pady=(0, 20))
         
-        # Center container for buttons
         center_frame = tk.Frame(button_frame, bg='#f0f0f0')
         center_frame.pack(anchor='center')
         
@@ -283,18 +266,15 @@ class ZSTCombineApp:
                                           command=self.start_processing, state=tk.DISABLED)
         self.combine_button.pack(side='left', padx=10)
         
-        # File count label
         self.file_count_label = tk.Label(main_frame, text="No files selected", bg='#f0f0f0', anchor='w')
         self.file_count_label.pack(fill='x', pady=(0, 10))
         
-        # File list frame
         list_frame_label = tk.Label(main_frame, text="Selected Files:", bg='#f0f0f0', anchor='w')
         list_frame_label.pack(fill='x')
         
         self.file_list_frame = FileListFrame(main_frame)
         self.file_list_frame.pack(fill='both', expand=True, pady=(5, 15))
         
-        # Status frame
         status_frame = tk.Frame(main_frame, bg='#f0f0f0')
         status_frame.pack(fill='x', pady=(10, 0))
         
@@ -345,11 +325,9 @@ class ZSTCombineApp:
             messagebox.showwarning("No Files", "Please select files first.")
             return
         
-        # Disable buttons during processing
         self.select_button.config(state=tk.DISABLED)
         self.combine_button.config(state=tk.DISABLED)
         
-        # Ask for output file location
         output_file = filedialog.asksaveasfilename(
             title="Save Combined Excel File",
             defaultextension=".xlsx",
